@@ -6,8 +6,8 @@ namespace OnlineShopApi.Repository.Interface
     {
         Task<List<Orders>> GetOrders();
         Task<Orders> FindOrder(int orderId);
-        Task EditOrder(Orders order);
-        Task DeleteOrder(int id);
-        Task CreateOrder(Orders order);
+        Task<bool> EditOrder(Orders order);
+        Task<bool> DeleteOrder(int id);
+        Task<bool> CreateOrder(Orders order);
     }
 }

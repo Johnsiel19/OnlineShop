@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using OnlineShopApi.Models;
 using OnlineShopApi.Repository;
 using OnlineShopApi.Repository.Interface;
+using OnlineShopApi.Service;
+using OnlineShopApi.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();

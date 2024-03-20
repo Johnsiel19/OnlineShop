@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository.Interface;
+using System.Threading.Tasks;
 
 namespace OnlineShopApi.Repository
 {
@@ -24,32 +26,59 @@ namespace OnlineShopApi.Repository
             return query;
         }
 
-        public async Task EditCustomer(Customers customer)
-        {
-            Customers c = await FindCustomer(customer.CustomerId);
-            c.Name = customer.Name;
-            c.Lastname = customer.Lastname;
-            c.Email = customer.Email;
-            c.Phone = customer.Phone;
-            c.Direccion = customer.Direccion;
-            c.ClientType = customer.ClientType;
-            c.Date = DateTime.Now;
-            c.Password = customer.Password;
+        public async Task<bool> EditCustomer(Customers customer)
+        {   
+            try
+            {
+                Customers c = await FindCustomer(customer.CustomerId);
+                c.Name = customer.Name;
+                c.Lastname = customer.Lastname;
+                c.Email = customer.Email;
+                c.Phone = customer.Phone;
+                c.Direccion = customer.Direccion;
+                c.ClientType = customer.ClientType;
+                c.Date = DateTime.Now;
+                c.Password = customer.Password;
 
-            this.context.SaveChanges();
+                this.context.SaveChanges();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }          
         }
 
-        public async Task DeleteCustomer(int id)
-        {
-            Customers order = await FindCustomer(id);
-            this.context.Remove(order);
-            this.context.SaveChanges();
+        public async Task<bool> DeleteCustomer(int id)
+        {        
+            try
+            {
+                Customers order = await FindCustomer(id);
+                this.context.Remove(order);
+                this.context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
         }
 
-        public async Task CreateCustomer(Customers customer)
+        public async Task<bool> CreateCustomer(Customers customer)
         {
-            await this.context.Customers.AddAsync(customer);
-            await this.context.SaveChangesAsync();
+            try
+            {
+                await this.context.Customers.AddAsync(customer);
+                await this.context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false; 
+            }
         }
+
     }
 }

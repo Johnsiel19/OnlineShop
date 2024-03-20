@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository;
 using OnlineShopApi.Repository.Interface;
+using OnlineShopApi.Service.Interface;
 
 namespace OnlineShopApi.Controllers
 {
@@ -11,45 +13,45 @@ namespace OnlineShopApi.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly IMapper mapper;
-        private readonly ICustomerRepository customerRepository;
+        private readonly ICustomerService customerService;
 
-        public CustomerController(ICustomerRepository customerRepository, IMapper mapper)
+        public CustomerController( IMapper mapper, ICustomerService customerService)
         {
-            this.customerRepository = customerRepository;
             this.mapper = mapper;
+            this.customerService = customerService;
         }
 
         [HttpGet("getcustomers")]
-        public async Task<ActionResult<List<Customers>>> GetCustomers()
+        public async Task<ActionResult<List<CustomerResponseModel>>> GetCustomers()
         {
-            var funcion = await customerRepository.GetCustomers();
+            var funcion = await customerService.GetCustomers();
             return funcion.ToList();
         }
 
         [HttpGet("getcustomerbyid/{id}")]
-        public async Task<ActionResult<Customers>> GetCustomerById(int id)
+        public async Task<ActionResult<CustomerResponseModel>> GetCustomerById(int id)
         {
-            var funcion = await customerRepository.FindCustomer(id);
+            var funcion = await customerService.FindCustomer(id);
             return funcion;
         }
 
         [HttpPost("createcustomer")]
-        public async Task CreateCustomer(Customers customer)
+        public async Task CreateCustomer(CustomerResponseModel customer)
         {
-            await customerRepository.CreateCustomer(customer);
+            await customerService.CreateCustomer(customer);
         }
 
         [HttpPut("editcustomer")]
         public async Task<ActionResult> EditCustomer(Customers customer)
         {
-            await this.customerRepository.EditCustomer(customer);
+            await this.customerService.EditCustomer(customer);
             return NoContent();
         }
 
         [HttpDelete("deletecustomer/{id}")]
         public async Task<ActionResult> DeleteCustomer(int id)
         {
-            await customerRepository.DeleteCustomer(id);
+            await customerService.DeleteCustomer(id);
             return NoContent();
         }
 

@@ -1,14 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Request;
 using OnlineShopApi.Repository.Interface;
+using OnlineShopApi.Service.Interface;
 
-namespace OnlineShopApi.Repository
+namespace OnlineShopApi.Service
 {
-    public class ProductRepository : IProductRepository
+    public class ProductService : IProductService
     {
         private readonly OnlineShopContext context;
 
-        public ProductRepository(OnlineShopContext context)
+        public ProductService(OnlineShopContext context)
         {
             this.context = context;
         }
@@ -52,17 +54,12 @@ namespace OnlineShopApi.Repository
             await this.context.SaveChangesAsync();
         }
 
-        Task<bool> IProductRepository.EditProduct(Products products)
+        Task<List<CustomerRequestModel>> IProductService.GetProducts()
         {
             throw new NotImplementedException();
         }
 
-        Task<bool> IProductRepository.DeleteProduct(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IProductRepository.CreateProduct(Products products)
+        Task<CustomerRequestModel> IProductService.FindProduct(int productId)
         {
             throw new NotImplementedException();
         }

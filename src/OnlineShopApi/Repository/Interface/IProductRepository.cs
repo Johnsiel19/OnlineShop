@@ -7,10 +7,11 @@ namespace OnlineShopApi.Repository.Interface
         Task<List<Products>> GetProducts();
 
         Task<Products> FindProduct(int productId);
-        Task EditProduct(Products products);
 
-        Task DeleteProduct(int id);
+        Task<bool> EditProduct(Products products);
 
-        Task CreateProduct(Products products);
+        Task<bool> DeleteProduct(int id);
+
+        Task<bool> CreateProduct(Products products);
     }
 }

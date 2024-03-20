@@ -1,4 +1,5 @@
 ﻿using OnlineShopApi.Models;
+using OnlineShopApi.Models.Response;
 
 namespace OnlineShopApi.Repository.Interface
 {
@@ -8,10 +9,10 @@ namespace OnlineShopApi.Repository.Interface
 
         Task<Customers> FindCustomer(int customerid);
 
-        Task EditCustomer(Customers customer);
+        Task<bool> EditCustomer(Customers customer);
 
-        Task DeleteCustomer(int id);
+        Task<bool> DeleteCustomer(int id);
 
-        Task CreateCustomer(Customers customer);
+        Task<bool> CreateCustomer(Customers customer);
     }
 }
