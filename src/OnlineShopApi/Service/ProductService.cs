@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using OnlineShopApi.Models;
 using OnlineShopApi.Models.Request;
+using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository.Interface;
 using OnlineShopApi.Service.Interface;
 
@@ -8,60 +10,92 @@ namespace OnlineShopApi.Service
 {
     public class ProductService : IProductService
     {
-        private readonly OnlineShopContext context;
+        private readonly IMapper mapper;
+        private readonly IProductRepository productRepository;
 
-        public ProductService(OnlineShopContext context)
+        public ProductService(IMapper mapper, IProductRepository productRepository)
         {
-            this.context = context;
+            this.mapper = mapper;
+            this.productRepository = productRepository;
         }
 
-        public async Task<List<Products>> GetProducts()
+        public async Task<bool> DeleteProduct(int id)
         {
-            return await this.context.Products.ToListAsync();
+            var responses = await this.productRepository.DeleteProduct(id);
+            return responses;
         }
 
-        public async Task<Products> FindProduct(int productId)
+        public async Task<ProductResponseModel> FindProduct(int productId)
         {
-            var query = await this.context.Products.FirstOrDefaultAsync(row => row.ProductId == productId);
-            return query;
+            var responses = await this.productRepository.FindProduct(productId);
+            var mapping = this.MapToResponseModel(responses);
+
+            return mapping;
         }
 
-        public async Task EditProduct(Products products)
+        public async Task<IEnumerable<ProductResponseModel>> GetProducts()
         {
-            Products p = await FindProduct(products.ProductId);
-            p.Provider = products.Provider;
-            p.PurchasPrice = products.PurchasPrice;
-            p.SalePrice = products.SalePrice;
-            p.CustomerId = products.CustomerId;
-            p.Date = DateTime.Now;
-            p.Description = products.Description;
-            p.Name = products.Name;
-            p.Stock = products.Stock;
+            IEnumerable<Products> responses = await this.productRepository.GetProducts();
+            var Mapping = this.MapToResponseModelList(responses);
 
-            this.context.SaveChanges();
+            return Mapping.ToList();
         }
 
-        public async Task DeleteProduct(int id)
+        public async Task<bool> EditProduct(ProductRequestModel customerRequestModel)
         {
-            Products product = await FindProduct(id);
-            this.context.Remove(product);
-            this.context.SaveChanges();
+            var something = this.mapper.Map<Products>(customerRequestModel);
+            var responses = await this.productRepository.EditProduct(something);
+
+            return responses;
         }
 
-        public async Task CreateProduct(Products products)
+        public async Task<bool> CreateProduct(ProductRequestModel customerRequestModel)
         {
-            await this.context.Products.AddAsync(products);
-            await this.context.SaveChangesAsync();
+            var something = this.mapper.Map<Products>(customerRequestModel);
+            var responses = await this.productRepository.CreateProduct(something);
+
+            return responses;
         }
 
-        Task<List<CustomerRequestModel>> IProductService.GetProducts()
+        private List<ProductResponseModel> MapToResponseModelList(IEnumerable<Products> productsEnumerable)
         {
-            throw new NotImplementedException();
+            List<ProductResponseModel> responseModels = new List<ProductResponseModel>();
+
+            foreach (Products product in productsEnumerable)
+            {
+                ProductResponseModel responseModel = new ProductResponseModel()
+                {
+                    CustomerId = product.CustomerId,
+                    Date = product.Date,
+                    Name = product.Name,
+                    Description = product.Description,
+                    ProductId = product.ProductId,
+                    Provider = product.Provider,
+                    PurchasPrice = product.PurchasPrice,
+                    SalePrice = product.SalePrice,
+                    Stock = product.Stock
+                };
+
+                responseModels.Add(responseModel);
+            }
+            return responseModels;
         }
 
-        Task<CustomerRequestModel> IProductService.FindProduct(int productId)
+        private ProductResponseModel MapToResponseModel(Products products)
         {
-            throw new NotImplementedException();
+            ProductResponseModel responseModel = new ProductResponseModel()
+            {
+                CustomerId = products.CustomerId,
+                Date = products.Date,
+                Name = products.Name,
+                Description = products.Description,
+                ProductId = products.ProductId,
+                Provider = products.Provider,
+                PurchasPrice = products.PurchasPrice,
+                SalePrice = products.SalePrice,
+                Stock = products.Stock
+            };
+            return responseModel;
         }
     }
 }

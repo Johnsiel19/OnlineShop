@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Request;
 using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository.Interface;
 using OnlineShopApi.Service.Interface;
@@ -8,56 +10,94 @@ namespace OnlineShopApi.Service
 {
     public class OrderService : IOrderService
     {
-        private readonly OnlineShopContext context;
 
-        public OrderService(OnlineShopContext context)
+        private readonly IMapper mapper;
+        private readonly IOrderRepository orderRepository;
+
+        public OrderService(IMapper mapper, IOrderRepository orderRepository)
         {
-            this.context = context;
+            this.mapper = mapper;
+            this.orderRepository = orderRepository;
         }
 
-        public async Task<List<Orders>> GetOrders()
+        public async Task<bool> EditOrder(OrderRequestModel orderRequestModel)
         {
-            return await this.context.Orders.ToListAsync();
+            var something = this.mapper.Map<Orders>(orderRequestModel);
+            var responses = await this.orderRepository.EditOrder(something);
+
+            return responses;
+
         }
 
-        public async Task<Orders> FindOrder(int orderId)
+        public async Task<bool> CreateOrder(OrderRequestModel orderRequestModel)
         {
-            var query = await this.context.Orders.FirstOrDefaultAsync(row => row.OrderId == orderId);
-            return query;
+            var something = this.mapper.Map<Orders>(orderRequestModel);
+            var responses = await this.orderRepository.CreateOrder(something);
+
+            return responses;
         }
 
-        public async Task EditOrder(Orders order)
+        public async Task<IEnumerable<OrderResponseModel>> GetOrders()
         {
-            Orders o = await FindOrder(order.OrderId);
-            o.CustomerId = order.CustomerId;
-            o.Date = order.Date;
-            o.Total = order.Total;
-            o.OrderDetails = order.OrderDetails;
+            try
+            {
+                IEnumerable<Orders> responses = await this.orderRepository.GetOrders();
 
-            this.context.SaveChanges();
+                var Mapping = this.MapToResponseModelList(responses);
+
+                return Mapping.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
-        public async Task DeleteOrder(int id)
+        public async Task<OrderResponseModel> FindOrder(int orderId)
         {
-            Orders order = await FindOrder(id);
-            this.context.Remove(order);
-            this.context.SaveChanges();
+            var responses = await this.orderRepository.FindOrder(orderId);
+            var mapping = this.MapToResponseModel(responses);
+            return mapping;
         }
 
-        public async Task CreateOrder(Orders order)
+        public async Task<bool> DeleteOrder(int id)
         {
-            await this.context.Orders.AddAsync(order);
-            await this.context.SaveChangesAsync();
+            var responses = await this.orderRepository.DeleteOrder(id);
+            return responses;
         }
 
-        Task<List<OrdersResponseModel>> IOrderService.GetOrders()
+        private List<OrderResponseModel> MapToResponseModelList(IEnumerable<Orders> ordersEnumerable)
         {
-            throw new NotImplementedException();
+            List<OrderResponseModel> responseModels = new List<OrderResponseModel>();
+
+            foreach (Orders order in ordersEnumerable)
+            {
+                OrderResponseModel responseModel = new OrderResponseModel()
+                {
+                    CustomerId = order.CustomerId,
+                    Date = order.Date,
+                    OrderId = order.OrderId,
+                    Total = order.Total
+                };
+
+                responseModels.Add(responseModel);
+            }
+
+            return responseModels;
         }
 
-        Task<OrdersResponseModel> IOrderService.FindOrder(int orderId)
+        private OrderResponseModel MapToResponseModel(Orders order)
         {
-            throw new NotImplementedException();
+            OrderResponseModel responseModel = new OrderResponseModel()
+            {
+                CustomerId = order.CustomerId,
+                Date = DateTime.Now,
+                OrderId = order.OrderId,
+                Total = order.Total
+            };
+            return responseModel;
         }
+
     }
 }

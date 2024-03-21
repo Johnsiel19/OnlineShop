@@ -1,18 +1,19 @@
 ﻿using OnlineShopApi.Models;
+using OnlineShopApi.Models.Request;
 using OnlineShopApi.Models.Response;
 
 namespace OnlineShopApi.Service.Interface
 {
     public interface ICustomerService
     {
-        Task<List<CustomerResponseModel>> GetCustomers();
+        Task<IEnumerable<CustomerResponseModel>> GetCustomers();
 
         Task<CustomerResponseModel> FindCustomer(int customerid);
 
-        Task<bool> EditCustomer(Customers customer);
+        Task<bool> EditCustomer(CustomerRequestModel customerRequest);
 
         Task<bool> DeleteCustomer(int id);
 
-        Task<bool> CreateCustomer(CustomerResponseModel customer);
+        Task<bool> CreateCustomer(CustomerRequestModel customerRequest);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineShopApi.Models;
 using OnlineShopApi.Models.Request;
+using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository.Interface;
 using OnlineShopApi.Service.Interface;
 
@@ -10,7 +11,6 @@ namespace OnlineShopApi.Controllers
     [Route("api/products/")]
     public class ProductController : ControllerBase
     {
-
         private readonly IProductService productService;
 
         public ProductController(IProductService productService)
@@ -19,39 +19,38 @@ namespace OnlineShopApi.Controllers
         }
 
         [HttpGet("getproducts")]
-        public async Task<ActionResult<List<CustomerRequestModel>>> GetCustomers()
+        public async Task<ActionResult<List<ProductResponseModel>>> GetCustomers()
         {
-            var funcion = await productService.GetProducts();
-            return funcion.ToList();
+            var response = await productService.GetProducts();
+            return response.ToList();
         }
 
         [HttpGet("getproductbyid/{id}")]
-        public async Task<ActionResult<CustomerRequestModel>> GetProductById(int id)
+        public async Task<ActionResult<ProductResponseModel>> GetProductById(int id)
         {
-            var funcion = await productService.FindProduct(id);
-            return funcion;
+            var response = await productService.FindProduct(id);
+            return response;
         }
 
         [HttpPost("createproduct")]
-        public async Task CreateProduct(Products product)
+        public async Task<bool> CreateProduct(ProductRequestModel product)
         {
-            await productService.CreateProduct(product);
+            var response = await productService.CreateProduct(product);
+            return response;
         }
 
         [HttpPut("editproduct")]
-        public async Task<ActionResult> EditProduct(Products product)
+        public async Task<ActionResult<bool>> EditProduct(ProductRequestModel product)
         {
-            await this.productService.EditProduct(product);
-            return NoContent();
+            var response = await this.productService.EditProduct(product);
+            return response;
         }
 
         [HttpDelete("deleteproduct/{id}")]
-        public async Task<ActionResult> DeleteProduct(int id)
+        public async Task<ActionResult<bool>> DeleteProduct(int id)
         {
-            await productService.DeleteProduct(id);
-            return NoContent();
+            var response = await productService.DeleteProduct(id);
+            return response;
         }
-
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace OnlineShopApi.Models.Response
 {
-    public class OrdersResponseModel
+    public class OrderResponseModel
     {
         public int OrderId { get; set; }
         public int? CustomerId { get; set; }

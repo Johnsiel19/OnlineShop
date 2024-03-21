@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineShopApi.Models;
-using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository.Interface;
-using System.Threading.Tasks;
 
 namespace OnlineShopApi.Repository
 {
@@ -13,11 +11,6 @@ namespace OnlineShopApi.Repository
         public CustomerRepository(OnlineShopContext context)
         {
             this.context = context;
-        }
-
-        public async Task<List<Customers>> GetCustomers()
-        {
-            return await this.context.Customers.ToListAsync();
         }
 
         public async Task<Customers> FindCustomer(int customerid)
@@ -80,5 +73,9 @@ namespace OnlineShopApi.Repository
             }
         }
 
+        public async Task<IEnumerable<Customers>> GetCustomers()
+        {
+            return await this.context.Customers.ToListAsync();
+        }
     }
 }

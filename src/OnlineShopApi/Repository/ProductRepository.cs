@@ -13,58 +13,71 @@ namespace OnlineShopApi.Repository
             this.context = context;
         }
 
-        public async Task<List<Products>> GetProducts()
-        {
-            return await this.context.Products.ToListAsync();
-        }
-
         public async Task<Products> FindProduct(int productId)
         {
             var query = await this.context.Products.FirstOrDefaultAsync(row => row.ProductId == productId);
             return query;
         }
 
-        public async Task EditProduct(Products products)
+        public async Task<bool> EditProduct(Products products)
         {
-            Products p = await FindProduct(products.ProductId);
-            p.Provider = products.Provider;
-            p.PurchasPrice = products.PurchasPrice;
-            p.SalePrice = products.SalePrice;
-            p.CustomerId = products.CustomerId;
-            p.Date = DateTime.Now;
-            p.Description = products.Description;
-            p.Name = products.Name;
-            p.Stock = products.Stock;
+            try
+            {
+                Products p = await FindProduct(products.ProductId);
+                p.Provider = products.Provider;
+                p.PurchasPrice = products.PurchasPrice;
+                p.SalePrice = products.SalePrice;
+                p.CustomerId = products.CustomerId;
+                p.Date = DateTime.Now;
+                p.Description = products.Description;
+                p.Name = products.Name;
+                p.Stock = products.Stock;
 
-            this.context.SaveChanges();
+                this.context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
-        public async Task DeleteProduct(int id)
+        public async Task<bool> DeleteProduct(int id)
         {
-            Products product = await FindProduct(id);
-            this.context.Remove(product);
-            this.context.SaveChanges();
+            try
+            {
+                Products product = await FindProduct(id);
+                this.context.Remove(product);
+                this.context.SaveChanges();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
         }
 
-        public async Task CreateProduct(Products products)
+        public async Task<IEnumerable<Products>> GetProducts()
         {
-            await this.context.Products.AddAsync(products);
-            await this.context.SaveChangesAsync();
+            return await this.context.Products.ToListAsync();
         }
 
-        Task<bool> IProductRepository.EditProduct(Products products)
+        public async Task<bool> CreateProduct(Products products)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                await this.context.Products.AddAsync(products);
+                await this.context.SaveChangesAsync(); 
 
-        Task<bool> IProductRepository.DeleteProduct(int id)
-        {
-            throw new NotImplementedException();
-        }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
 
-        Task<bool> IProductRepository.CreateProduct(Products products)
-        {
-            throw new NotImplementedException();
+            }          
         }
     }
 }

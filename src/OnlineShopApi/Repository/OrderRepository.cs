@@ -13,11 +13,6 @@ namespace OnlineShopApi.Repository
             this.context = context;
         }
 
-        public async Task<List<Orders>> GetOrders()
-        {
-            return await this.context.Orders.ToListAsync();
-        }
-
         public async Task<Orders> FindOrder(int orderId)
         {
             var query = await this.context.Orders.FirstOrDefaultAsync(row => row.OrderId == orderId);
@@ -40,10 +35,7 @@ namespace OnlineShopApi.Repository
             catch (Exception ex)
             {
                 return false;
-            }
-
-
-            
+            }           
         }
 
         public async Task<bool> DeleteOrder(int id)
@@ -74,6 +66,11 @@ namespace OnlineShopApi.Repository
             {
                 return false;
             }
+        }
+
+        public async Task<IEnumerable<Orders>> GetOrders()
+        {
+            return await this.context.Orders.ToListAsync();
         }
     }
 }

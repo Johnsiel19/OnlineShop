@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Request;
 using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository;
 using OnlineShopApi.Repository.Interface;
@@ -24,37 +25,36 @@ namespace OnlineShopApi.Controllers
         [HttpGet("getcustomers")]
         public async Task<ActionResult<List<CustomerResponseModel>>> GetCustomers()
         {
-            var funcion = await customerService.GetCustomers();
-            return funcion.ToList();
+            var responses = await this.customerService.GetCustomers();
+            return responses.ToList();
         }
 
         [HttpGet("getcustomerbyid/{id}")]
         public async Task<ActionResult<CustomerResponseModel>> GetCustomerById(int id)
         {
-            var funcion = await customerService.FindCustomer(id);
-            return funcion;
+            var response = await this.customerService.FindCustomer(id);
+            return response;
         }
 
         [HttpPost("createcustomer")]
-        public async Task CreateCustomer(CustomerResponseModel customer)
+        public async Task<bool> CreateCustomer(CustomerRequestModel customer)
         {
-            await customerService.CreateCustomer(customer);
+            var response = await this.customerService.CreateCustomer(customer);
+            return response;
         }
 
         [HttpPut("editcustomer")]
-        public async Task<ActionResult> EditCustomer(Customers customer)
+        public async Task<ActionResult<bool>> EditCustomer(CustomerRequestModel customer)
         {
-            await this.customerService.EditCustomer(customer);
-            return NoContent();
+            var response = await this.customerService.EditCustomer(customer);
+            return response;
         }
 
         [HttpDelete("deletecustomer/{id}")]
-        public async Task<ActionResult> DeleteCustomer(int id)
+        public async Task<ActionResult<bool>> DeleteCustomer(int id)
         {
-            await customerService.DeleteCustomer(id);
-            return NoContent();
+            var response = await this.customerService.DeleteCustomer(id);
+            return response;
         }
-
-
     }
 }

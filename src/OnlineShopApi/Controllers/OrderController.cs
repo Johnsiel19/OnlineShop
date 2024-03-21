@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Request;
 using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository.Interface;
 using OnlineShopApi.Service.Interface;
@@ -18,37 +19,38 @@ namespace OnlineShopApi.Controllers
         }
 
         [HttpGet("getorders")]
-        public async Task<ActionResult<List<OrdersResponseModel>>> GetOrders()
+        public async Task<ActionResult<List<OrderResponseModel>>> GetOrders()
         {
-            var funcion = await orderService.GetOrders();
-            return funcion.ToList();
+            var responses = await this.orderService.GetOrders();
+            return responses.ToList();
         }
 
         [HttpGet("getorderbyid/{id}")]
-        public async Task<ActionResult<OrdersResponseModel>> GetOrderById(int id)
+        public async Task<ActionResult<OrderResponseModel>> GetOrderById(int id)
         {
-            var funcion = await orderService.FindOrder(id);
-            return funcion;
+            var responses = await this.orderService.FindOrder(id);
+            return responses;
         }
 
         [HttpPost("createorder")]
-        public async Task CreateOrder(Orders order)
+        public async Task<bool> CreateOrder(OrderRequestModel order)
         {
-            await orderService.CreateOrder(order);
+            var response = await this.orderService.CreateOrder(order);
+            return response;
         }
 
         [HttpPut("editorder")]
-        public async Task<ActionResult> EditOrder(Orders order)
+        public async Task<ActionResult<bool>> EditOrder(OrderRequestModel order)
         {
-            await this.orderService.EditOrder(order);
-            return NoContent();
+            var response = await this.orderService.EditOrder(order);
+            return response;
         }
 
         [HttpDelete("deleteorder/{id}")]
-        public async Task<ActionResult> DeleteOrder(int id)
+        public async Task<ActionResult<bool>> DeleteOrder(int id)
         {
-            await orderService.DeleteOrder(id);
-            return NoContent();
+            var response = await this.orderService.DeleteOrder(id);
+            return response;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Request;
 using OnlineShopApi.Models.Response;
 using OnlineShopApi.Repository.Interface;
 using OnlineShopApi.Service.Interface;
@@ -19,38 +19,19 @@ namespace OnlineShopApi.Service
             this.customerRepository = customerRepository;
         }
 
-        public async Task<List<CustomerResponseModel>> GetCustomers()
+        public async Task<IEnumerable<CustomerResponseModel>> GetCustomers()
         {
+            IEnumerable<Customers> responses = await this.customerRepository.GetCustomers();
+            var Mapping = this.MapToResponseModelList(responses);
 
-            try
-            {
-
-                IEnumerable<Customers> responses = await this.customerRepository.GetCustomers();
-
-                var Mapping = this.MapToResponseModelList(responses);
-
-                return Mapping.ToList();
-
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
+            return Mapping.ToList();
         }
 
-        public async Task<Customers> FindCustomer(int customerid)
+        public async Task<CustomerResponseModel> FindCustomer(int customerid)
         {
             var responses = await this.customerRepository.FindCustomer(customerid);
-            return responses;
-        }
-
-        public async Task<bool> EditCustomer(Customers customer)
-        {
-            var responses = await this.customerRepository.EditCustomer(customer);
-            return responses;
-
-
+            var mapping = this.MapToResponseModel(responses);
+            return mapping;
         }
 
         public async Task<bool> DeleteCustomer(int id)
@@ -59,20 +40,26 @@ namespace OnlineShopApi.Service
             return responses;
         }
 
-        public async Task<bool> CreateCustomer(CustomerResponseModel customer)
+        public async Task<bool> EditCustomer(CustomerRequestModel customerRequest)
         {
-            var something = this.mapper.Map<Customers>(customer);
-
-
+            var something = this.mapper.Map<Customers>(customerRequest);
             var responses = await this.customerRepository.CreateCustomer(something);
 
             return responses;
 
+            //var mapping = this.MapToRequestModel(customerRequest);
+            //var responses = await this.customerRepository.EditCustomer(mapping);
+
+            //return responses;
+
         }
 
-        Task<CustomerResponseModel> ICustomerService.FindCustomer(int customerid)
+        public async Task<bool> CreateCustomer(CustomerRequestModel customerRequest)
         {
-            throw new NotImplementedException();
+            var something = this.mapper.Map<Customers>(customerRequest);
+            var responses = await this.customerRepository.CreateCustomer(something);
+
+            return responses;
         }
 
         private List<CustomerResponseModel> MapToResponseModelList(IEnumerable<Customers> customersEnumerable)
@@ -100,9 +87,38 @@ namespace OnlineShopApi.Service
             return responseModels;
         }
 
+        private CustomerResponseModel MapToResponseModel(Customers customer)
+        {    
+            CustomerResponseModel responseModel = new CustomerResponseModel()
+            {
+                ClientType = customer.ClientType,
+                CustomerId = customer.CustomerId,
+                Date = customer.Date,
+                Direccion = customer.Direccion,
+                Email = customer.Email,
+                Lastname = customer.Lastname,
+                Name = customer.Name,
+                Password = customer.Password,
+                Phone = customer.Phone
+            };
+            return responseModel;
+        }
 
+        private Customers MapToRequestModel(CustomerResponseModel customer)
+        {
+            Customers responseModel = new Customers()
+            {
+                ClientType = customer.ClientType,
+                CustomerId = customer.CustomerId,
+                Date = customer.Date,
+                Direccion = customer.Direccion,
+                Email = customer.Email,
+                Lastname = customer.Lastname,
+                Name = customer.Name,
+                Password = customer.Password,
+                Phone = customer.Phone
+            };
+            return responseModel;
+        }       
     }
-
-
-
 }
