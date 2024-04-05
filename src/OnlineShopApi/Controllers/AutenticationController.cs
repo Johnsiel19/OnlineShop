@@ -21,6 +21,7 @@ namespace OnlineShopApi.Controllers
         }
 
         [HttpPost]
+
         [Route("Validate")]
         public IActionResult Validate([FromBody] UserToken request)
         {
