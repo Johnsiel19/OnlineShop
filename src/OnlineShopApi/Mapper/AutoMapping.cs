@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OnlineShopApi.Models;
+using OnlineShopApi.Models.Request;
 using OnlineShopApi.Models.Response;
 
 namespace OnlineShopApi.Mapper
@@ -8,6 +9,8 @@ namespace OnlineShopApi.Mapper
     {
         public AutoMapping() {
             CreateMap<CustomerResponseModel, Customers>();
+            CreateMap<CustomerRequestModel, Customers>();
+            CreateMap<OrderRequestModel, Orders>();
         }
     }
 }

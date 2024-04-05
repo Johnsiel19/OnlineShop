@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineShopApi.Models;
 using OnlineShopApi.Models.Request;
@@ -11,6 +12,7 @@ namespace OnlineShopApi.Controllers
 {
     [ApiController]
     [Route("api/customers/")]
+    [Authorize]
     public class CustomerController : ControllerBase
     {
         private readonly IMapper mapper;
