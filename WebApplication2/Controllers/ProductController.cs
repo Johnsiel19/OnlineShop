@@ -20,7 +20,7 @@ namespace OnlineShopWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var productsList = Enumerable.Empty<ProductResponseModel>();
+            var productsList = Enumerable.Empty<ProductViewModel>();
             try
             {
                 var response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/products/getproducts").ConfigureAwait(false);
@@ -29,7 +29,7 @@ namespace OnlineShopWeb.Controllers
                 {
                     string data = await response.Content.ReadAsStringAsync();
                     if (!string.IsNullOrWhiteSpace(data))
-                        productsList = JsonConvert.DeserializeObject<List<ProductResponseModel>>(data) ?? Enumerable.Empty<ProductResponseModel>();
+                        productsList = JsonConvert.DeserializeObject<List<ProductViewModel>>(data) ?? Enumerable.Empty<ProductViewModel>();
                 }
             }
             catch (Exception ex)

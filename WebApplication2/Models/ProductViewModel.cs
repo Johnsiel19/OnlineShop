@@ -1,6 +1,6 @@
 ﻿namespace OnlineShopWeb.Models
 {
-    public class ProductResponseModel
+    public class ProductViewModel
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
