@@ -51,7 +51,9 @@ namespace OnlineShopApi.Service
 
         public async Task<bool> CreateProduct(ProductRequestModel customerRequestModel)
         {
-            var something = this.mapper.Map<Products>(customerRequestModel);
+
+            var something = this.MapToRequestModel(customerRequestModel);
+            something.Date = DateTime.Now;
             var responses = await this.productRepository.CreateProduct(something);
 
             return responses;
@@ -84,6 +86,23 @@ namespace OnlineShopApi.Service
         private ProductResponseModel MapToResponseModel(Products products)
         {
             ProductResponseModel responseModel = new ProductResponseModel()
+            {
+                CustomerId = products.CustomerId,
+                Date = products.Date,
+                Name = products.Name,
+                Description = products.Description,
+                ProductId = products.ProductId,
+                Provider = products.Provider,
+                PurchasPrice = products.PurchasPrice,
+                SalePrice = products.SalePrice,
+                Stock = products.Stock
+            };
+            return responseModel;
+        }
+
+        private Products MapToRequestModel(ProductRequestModel products)
+        {
+            Products responseModel = new Products()
             {
                 CustomerId = products.CustomerId,
                 Date = products.Date,

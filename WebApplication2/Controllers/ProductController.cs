@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using OnlineShopWeb.Models;
 using System.Net;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace OnlineShopWeb.Controllers
@@ -37,6 +38,39 @@ namespace OnlineShopWeb.Controllers
             }
             
             return View(productsList);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(ProductViewModel model)
+        {
+            try
+            {
+                string data = JsonConvert.SerializeObject(model);
+                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage responde = _httpClient.PostAsync(_httpClient.BaseAddress + "/products/createproduct", content).Result;
+
+                if (responde.StatusCode == HttpStatusCode.OK)
+                {
+                    TempData["successMessage"] = "Product Create.";
+                    return RedirectToAction("Index");
+                }
+
+            }
+            catch(Exception ex)
+            {
+                TempData["successMessage"] = ex.Message;
+                return View();
+            }
+            return View();
+
+           
         }
     }
 }
