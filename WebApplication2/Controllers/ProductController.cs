@@ -54,23 +54,109 @@ namespace OnlineShopWeb.Controllers
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage responde = _httpClient.PostAsync(_httpClient.BaseAddress + "/products/createproduct", content).Result;
+                HttpResponseMessage response = _httpClient.PostAsync(_httpClient.BaseAddress + "/products/createproduct", content).Result;
 
-                if (responde.StatusCode == HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    TempData["successMessage"] = "Product Create.";
+                    TempData["successMessage"] = "Product Created.";
                     return RedirectToAction("Index");
                 }
-
             }
             catch(Exception ex)
             {
                 TempData["successMessage"] = ex.Message;
                 return View();
             }
-            return View();
+            return View();           
+        }
 
-           
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            try
+            {
+                ProductViewModel product = new ProductViewModel();
+                HttpResponseMessage response = _httpClient.GetAsync(_httpClient.BaseAddress + "/products/getproductbyid/" + id).Result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    string data = await response.Content.ReadAsStringAsync();
+                    product = JsonConvert.DeserializeObject<ProductViewModel>(data);
+                }
+                return View(product);
+            }
+            catch( Exception ex )
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Edit(ProductViewModel model)
+        {
+            try
+            {
+                string data = JsonConvert.SerializeObject(model);
+                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = _httpClient.PutAsync(_httpClient.BaseAddress + "/products/editproduct", content).Result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    TempData["successMessage"] = "Product details Updated.";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                ProductViewModel product = new ProductViewModel();
+                HttpResponseMessage response = _httpClient.GetAsync(_httpClient.BaseAddress + "/products/getproductbyid/" + id).Result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    string data = await response.Content.ReadAsStringAsync();
+                    product = JsonConvert.DeserializeObject<ProductViewModel>(data);
+                }
+                return View(product);
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                HttpResponseMessage response = _httpClient.DeleteAsync(_httpClient.BaseAddress + "/products/deleteproduct/" + id).Result;
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    TempData["successMessage"] = "Product details delete.";
+                    return RedirectToAction("Index");
+                }
+                return View();
+            }
+            catch(Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
         }
     }
 }

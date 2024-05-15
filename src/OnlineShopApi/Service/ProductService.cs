@@ -43,7 +43,7 @@ namespace OnlineShopApi.Service
 
         public async Task<bool> EditProduct(ProductRequestModel customerRequestModel)
         {
-            var something = this.mapper.Map<Products>(customerRequestModel);
+            var something = this.MapToRequestModel(customerRequestModel);
             var responses = await this.productRepository.EditProduct(something);
 
             return responses;
